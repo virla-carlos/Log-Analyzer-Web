@@ -1,10 +1,17 @@
 # Ambiente virtual
 .venv/
 
-# Python
+# Configurações locais do editor
+.vscode/
+
+# Cache do python
 __pycache__/
 *.pyc
+*.pyo
 
-# Datasets
+# Arquivos temporários
+.DS_Store
+Thumbs.db
+
+# Dataset completo
 data/raw/*
-!data/raw/BGL_2k.log_structured.csv
