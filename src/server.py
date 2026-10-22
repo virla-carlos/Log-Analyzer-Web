@@ -1,8 +1,7 @@
 import json
 
 from flask import Flask, jsonify
-
-from main import bgl, generate_analysis, calc_limit
+from src.main import bgl, generate_analysis, calc_limit
 
 # static_url_path="" faz a pasta "static" ser servida a partir da raiz do site
 app = Flask(__name__)
