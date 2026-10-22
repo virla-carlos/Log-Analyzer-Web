@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Big Data Log Analyzer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>Big Data Log Analyzer</h1>
+      <p class="subtitle">Alertas recorrentes do BGL, ordenados por prioridade de análise</p>
+    </div>
+    <button id="analyze" class="btn">Analisar logs</button>
+  </header>
+
+  <main id="empty" class="empty">
+    <p><strong>Nenhuma análise carregada.</strong></p>
+    <p>Clique em “Analisar logs” para ler o dataset e montar o ranking de alertas.</p>
+  </main>
+
+  <main id="dashboard" hidden>
+    <section class="stats" aria-label="Resumo">
+      <div><span class="stat-value" id="s-total">0</span><span class="stat-label">registros de alerta</span></div>
+      <div><span class="stat-value" id="s-patterns">0</span><span class="stat-label">padrões distintos</span></div>
+      <div><span class="stat-value" id="s-q50">0</span><span class="stat-label">Q50 (limite do risco baixo)</span></div>
+      <div><span class="stat-value" id="s-q75">0</span><span class="stat-label">Q75 (limite do risco médio)</span></div>
+      <div><span class="stat-value" id="s-top">0%</span><span class="stat-label">dos alertas vêm do padrão nº 1</span></div>
+    </section>
+
+    <section class="charts">
+      <figure class="chart-main">
+        <figcaption>
+          <h2>Padrões que mais se repetem</h2>
+          <p>As linhas tracejadas mostram onde termina o risco baixo (Q50) e o risco médio (Q75).</p>
+        </figcaption>
+        <div class="canvas-box tall"><canvas id="bar"></canvas></div>
+      </figure>
+
+      <figure class="chart-side">
+        <figcaption>
+          <h2>Peso de cada prioridade</h2>
+          <p>Parcela dos registros de alerta em cada faixa.</p>
+        </figcaption>
+        <div class="canvas-box"><canvas id="donut"></canvas></div>
+        <ul class="legend" id="legend"></ul>
+      </figure>
+    </section>
+
+    <section class="charts-extra" aria-label="Análises complementares">
+      <figure>
+        <figcaption>
+          <h2>Concentração dos alertas (Pareto)</h2>
+          <p id="pareto-note"></p>
+        </figcaption>
+        <div class="canvas-box"><canvas id="pareto"></canvas></div>
+      </figure>
+
+      <figure>
+        <figcaption>
+          <h2>Distribuição das ocorrências</h2>
+          <p>Quantos padrões têm poucas ou muitas ocorrências. Mostra a distribuição das ocorrências utilizada na análise dos quartis Q50 e Q75.</p>
+        </figcaption>
+        <div class="canvas-box"><canvas id="hist"></canvas></div>
+      </figure>
+
+      <figure>
+        <figcaption>
+          <h2>Alertas por dia</h2>
+          <p>Registros de alerta em cada data do dataset.</p>
+        </figcaption>
+        <div class="canvas-box"><canvas id="timeline"></canvas></div>
+      </figure>
+
+      <figure>
+        <figcaption>
+          <h2>Alertas por componente</h2>
+          <p>Os 10 componentes que mais emitiram alertas.</p>
+        </figcaption>
+        <div class="canvas-box"><canvas id="component"></canvas></div>
+      </figure>
+    </section>
+
+    <section class="ranking">
+      <div class="ranking-head">
+        <h2>Ranking completo</h2>
+        <div class="controls">
+          <div class="chips" id="chips" role="group" aria-label="Filtrar por prioridade"></div>
+          <input id="search" type="search" placeholder="Buscar EventId ou padrão" aria-label="Buscar">
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-key="EventId">EventId</th>
+              <th data-key="Level">Level</th>
+              <th data-key="EventTemplate">Padrão (EventTemplate)</th>
+              <th data-key="Occurrences" class="num">Ocorrências</th>
+              <th data-key="Priority">Prioridade</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <p class="count" id="count"></p>
+    </section>
+  </main>
+
+  <p id="error" class="error" hidden></p>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
