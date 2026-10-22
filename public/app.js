@@ -43,7 +43,7 @@ async function analyze() {
   } catch (err) {
     $("error").textContent =
       "Não foi possível carregar a análise. Confira se o servidor está rodando e se " +
-      "data/raw/BGL_2k.log_structured.csv existe. Detalhe: " + err.message;
+      "data/sample/BGL_2k.log_structured.csv existe. Detalhe: " + err.message;
     $("error").hidden = false;
   } finally {
     button.disabled = false;
