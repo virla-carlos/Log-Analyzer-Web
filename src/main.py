@@ -7,7 +7,7 @@ DATA_PATH = (
     BASE_DIR
     / "data"
     / "sample"
-    / "BGL_2k.log_structured.csv"
+    / "BGL_2k_custom_structured.csv"
 )
 
 bgl = pd.read_csv(DATA_PATH)  

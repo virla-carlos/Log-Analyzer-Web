@@ -36,7 +36,7 @@ async function analyze() {
   $("error").hidden = true;
 
   try {
-    const response = await fetch("/api/analysis");
+    const response = await fetch("http://127.0.0.1:5000/api/analysis");
     if (!response.ok) throw new Error("O servidor respondeu com erro " + response.status);
     state.data = await response.json();
     render();
