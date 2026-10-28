@@ -1,18 +1,22 @@
 <div align="center">
 
-# 📊 Big Data Log Analyzer Web
+<img src="./public/assets/logo.png" alt="Logo do Log Analyzer" width="160">
 
-### Análise e priorização de padrões recorrentes em grandes volumes de logs
+# 📊 Log Analyzer
 
-Projeto desenvolvido em **Python** para transformar registros de logs em informações úteis para equipes de suporte, facilitando a identificação de alertas recorrentes, a priorização de incidentes e a visualização dos dados através de um dashboard web.
+### Análise e priorização de alertas recorrentes em logs
 
+Aplicação web desenvolvida em **Python** para transformar registros de log em informações úteis para equipes de suporte e desenvolvimento. O dashboard identifica alertas recorrentes, agrupa padrões semelhantes, prioriza eventos e apresenta os resultados de forma visual e interativa.
+
+[![Acessar aplicação](https://img.shields.io/badge/Acessar%20aplica%C3%A7%C3%A3o-Vercel-000000?logo=vercel)](https://log-analyzer-app.vercel.app/)
 ![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python&logoColor=white)
 ![Pandas](https://img.shields.io/badge/Pandas-Data%20Analysis-150458?logo=pandas)
 ![Flask](https://img.shields.io/badge/Flask-API-000000?logo=flask&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-Frontend-F7DF1E?logo=javascript&logoColor=black)
 ![Chart.js](https://img.shields.io/badge/Chart.js-Visualization-FF6384?logo=chartdotjs&logoColor=white)
-![Vercel](https://img.shields.io/badge/Vercel-Deploy-000000?logo=vercel)
-![Status](https://img.shields.io/badge/status-v0.1%20em%20desenvolvimento-yellow)
+![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
+
+[Acessar demonstração](https://log-analyzer-app.vercel.app/) · [Ver repositório](https://github.com/virla-carlos/bigdata-log-analyzer-web)
 
 </div>
 
@@ -20,45 +24,46 @@ Projeto desenvolvido em **Python** para transformar registros de logs em informa
 
 ## 🎯 Sobre o projeto
 
-Sistemas e aplicações podem gerar milhares ou milhões de registros de log durante sua execução.
+Sistemas e aplicações podem gerar milhares ou milhões de registros de log durante sua execução. Em cenários de suporte e investigação de incidentes, analisar esse volume manualmente dificulta a identificação dos erros mais recorrentes e torna o diagnóstico inicial mais demorado.
 
-Em cenários de suporte e investigação de incidentes, analisar manualmente grandes volumes desses registros pode dificultar a identificação dos erros mais recorrentes e tornar o diagnóstico inicial mais demorado.
+O **Log Analyzer** foi desenvolvido para apoiar essa etapa da investigação. A aplicação identifica registros classificados como alerta, agrupa padrões semelhantes, calcula sua recorrência e apresenta os resultados em um dashboard web.
 
-O **Big Data Log Analyzer** foi desenvolvido para auxiliar nesse processo.
+O objetivo não é diagnosticar automaticamente a causa raiz nem aplicar correções no sistema analisado. A proposta é oferecer evidências que ajudem equipes de suporte e desenvolvimento a direcionar melhor suas investigações.
 
-A aplicação identifica registros classificados como alerta, agrupa padrões semelhantes, calcula sua recorrência e apresenta os resultados de forma visual através de um dashboard web.
+---
 
-O objetivo não é substituir a análise humana nem diagnosticar automaticamente a causa raiz de um incidente, mas fornecer informações que ajudem equipes de suporte e desenvolvimento a direcionarem melhor suas investigações.
+## 🔄 Evolução do projeto
+
+O projeto foi iniciado como uma aplicação desktop em **Python**, com interface em **Tkinter** e gráficos em **Matplotlib**, para validar o fluxo de análise dos dados.
+
+Após validar a lógica de filtragem, agrupamento e priorização, a solução evoluiu para esta versão web. A análise permanece no back-end em Python, enquanto a interface passou a ser apresentada por um dashboard desenvolvido com HTML, CSS, JavaScript e Chart.js.
 
 ---
 
 ## ✨ Funcionalidades
 
-A versão atual da aplicação permite:
+A versão atual permite:
 
 - Identificar registros classificados como alerta;
-- Agrupar alertas por padrão;
-- Calcular a quantidade de ocorrências;
-- Ordenar padrões pela recorrência;
+- Agrupar alertas por padrão de mensagem;
+- Calcular e ordenar as ocorrências por recorrência;
 - Calcular os quartis Q50 e Q75;
-- Classificar padrões em níveis de prioridade;
+- Classificar padrões em níveis de risco;
 - Exibir indicadores gerais da análise;
 - Visualizar gráficos interativos;
 - Consultar o ranking completo dos padrões;
 - Filtrar resultados por prioridade;
-- Pesquisar por `EventId` ou `EventTemplate`;
-- Ordenar os dados diretamente pela tabela.
+- Pesquisar por `EventId` ou padrão de mensagem;
+- Ordenar a tabela de resultados.
 
 ---
 
 ## 🧠 Fluxo da aplicação
 
 ```text
-Dataset BGL
+Dataset estruturado
       ↓
-Python
-      ↓
-Pandas
+Python + Pandas
       ↓
 Filtragem dos alertas
       ↓
@@ -74,109 +79,69 @@ Flask API
       ↓
 JSON
       ↓
-JavaScript
-      ↓
-Chart.js
+JavaScript + Chart.js
       ↓
 Dashboard Web
 ```
 
-A lógica de análise permanece no back-end em Python, enquanto o front-end é responsável pela apresentação e interação com os resultados.
+A lógica de análise fica no back-end em Python. O front-end consome a API, monta os indicadores, gera os gráficos e disponibiliza filtros, busca e ordenação.
 
 ---
 
 ## 📊 Dataset
 
-O projeto utiliza o **BGL (Blue Gene/L)**, disponibilizado através do LogHub.
+O projeto foi inicialmente construído a partir do **BGL (Blue Gene/L)**, dataset disponibilizado pelo LogHub, usado para estudar a estrutura de logs e validar o fluxo de análise.
 
-O dataset completo possui aproximadamente:
+A versão publicada utiliza uma **amostra experimental com logs customizados**, criada para representar cenários de suporte de forma didática, como falhas de sincronização, ordens não recebidas, problemas de autenticação, tokens expirados, dispositivos offline e erros HTTP.
 
-```text
-4,7 milhões de registros
-≈ 708 MiB
-```
+> Os registros do dataset experimental são fictícios e não representam dados de produção, usuários ou sistemas reais.
 
-Para o desenvolvimento e validação inicial da aplicação é utilizada a amostra estruturada:
-
-```text
-BGL_2k.log_structured.csv
-```
-
-contendo:
-
-```text
-2.000 registros
-```
-
-A utilização dessa amostra permite desenvolver e validar o fluxo da aplicação antes da evolução para volumes maiores de dados.
-
----
-
-## 🔎 Principais campos utilizados
+O dataset mantém uma estrutura com campos como:
 
 | Campo | Descrição |
 |---|---|
 | `Label` | Classificação do registro |
-| `EventId` | Identificador associado a determinado padrão de log |
+| `EventId` | Identificador associado a um padrão de log |
 | `EventTemplate` | Representação generalizada da mensagem |
 | `Level` | Nível de severidade |
-| `Component` | Componente responsável pelo evento |
-| `Date` | Data associada ao registro |
+| `Component` | Componente associado ao evento |
+| `Date` | Data do registro |
 | `Content` | Mensagem original do log |
-| `Node` | Nó ou máquina relacionado ao evento |
+| `Node` | Nó ou equipamento relacionado ao evento |
 
-No dataset utilizado:
+No fluxo atual, `Label = "-"` representa um evento normal. Registros com outros valores são tratados como alertas.
 
-```text
-Label = "-"
-```
+### EventId e EventTemplate
 
-representa um evento normal.
+O `EventId` identifica um padrão de mensagem; ele não representa necessariamente um código de erro ou um nível de severidade.
 
-Registros com valores diferentes de `-` são tratados pela aplicação como alertas.
-
----
-
-## 🧩 EventId e EventTemplate
-
-O `EventId` funciona como identificador de determinado padrão de mensagem.
-
-Ele não representa necessariamente um código de erro ou um nível de severidade.
-
-O `EventTemplate` representa uma forma generalizada da mensagem de log.
-
-Por exemplo:
+O `EventTemplate` é uma versão generalizada da mensagem. Por exemplo:
 
 ```text
-socket to 10.0.0.1:5000
-socket to 10.0.0.2:6000
+Ordem 12345 não recebida no dispositivo A01
+Ordem 67890 não recebida no dispositivo B02
 ```
 
-podem ser representados por um padrão semelhante a:
+podem ser agrupados em um único padrão:
 
 ```text
-socket to <*>
+Ordem <*> não recebida no dispositivo <*>
 ```
 
-Isso permite agrupar mensagens que possuem valores diferentes, mas seguem a mesma estrutura.
-
-Na versão atual, `EventId` e `EventTemplate` já são fornecidos pelo dataset estruturado.
+Esse agrupamento permite identificar quais tipos de alerta se repetem com maior frequência.
 
 ---
 
 ## 🚨 Classificação de prioridade
 
-Após identificar os padrões, a aplicação calcula quantas vezes cada padrão ocorreu.
-
-Em seguida são calculados:
+Após identificar os padrões, a aplicação contabiliza suas ocorrências e calcula:
 
 ```text
 Q50 → mediana da distribuição das ocorrências
-
 Q75 → terceiro quartil da distribuição
 ```
 
-A regra utilizada atualmente é:
+A regra atual é:
 
 ```text
 Ocorrências <= Q50
@@ -189,180 +154,52 @@ Ocorrências > Q75
 → RISCO ALTO
 ```
 
-Na amostra atual, os registros classificados como alerta possuem nível `FATAL`.
-
-Por isso, a prioridade nesta versão é diferenciada principalmente pela **recorrência dos padrões**.
-
-Como evolução, a aplicação poderá utilizar:
-
-```text
-recorrência + severidade
-```
-
-para produzir uma classificação mais completa.
+A prioridade é definida principalmente pela recorrência. Uma evolução futura pode combinar recorrência e severidade para compor uma classificação mais completa.
 
 ---
 
-## 📈 Resultados da amostra atual
+## 📈 Resultados da amostra experimental
 
-Na amostra utilizada:
+Na amostra usada no dashboard atual:
 
 ```text
 2.000 registros analisados
-```
-
-Foram encontrados:
-
-```text
 1.857 registros normais
 143 registros de alerta
+16 padrões de alerta identificados
 ```
 
-Após o agrupamento:
-
-```text
-16 padrões de alerta
-```
-
-O padrão mais recorrente identificado foi:
+O padrão mais recorrente foi:
 
 ```text
 EventId: E55
 Ocorrências: 59
 ```
 
-seguido por:
-
-```text
-EventId: E52
-Ocorrências: 30
-```
-
-O `E55` representa aproximadamente:
-
-```text
-41,26%
-```
-
-dos registros classificados como alerta.
-
-Os limites calculados foram:
+Ele representa aproximadamente **41,26%** dos alertas. Os limites calculados foram:
 
 ```text
 Q50 = 3,5
 Q75 = 8,25
 ```
 
----
-
-## 📊 Dashboard
-
-O dashboard apresenta indicadores gerais da análise, incluindo:
-
-- Total de registros de alerta;
-- Quantidade de padrões identificados;
-- Valor de Q50;
-- Valor de Q75;
-- Percentual dos alertas concentrados no padrão mais recorrente.
-
-Além dos indicadores, diferentes gráficos permitem explorar os resultados.
+Além disso, **5 dos 16 padrões identificados concentram 80% dos registros de alerta**, evidenciando o valor da análise de Pareto para priorizar a investigação.
 
 ---
 
-## 📉 Visualizações
+## 📉 Dashboard e visualizações
 
-### 1. Padrões que mais se repetem
+O dashboard apresenta indicadores como total de alertas, quantidade de padrões, Q50, Q75 e concentração dos alertas no padrão mais recorrente.
 
-Gráfico de barras horizontal que compara:
+As visualizações disponíveis são:
 
-```text
-EventId × Ocorrências
-```
+1. **Padrões que mais se repetem:** gráfico de barras horizontal comparando `EventId` e quantidade de ocorrências, com linhas de referência para Q50 e Q75.
+2. **Distribuição por prioridade:** comparação entre a proporção de padrões e registros em risco alto, médio e baixo.
+3. **Alertas por dia:** gráfico temporal para identificar concentrações de alertas ao longo do tempo.
+4. **Concentração dos alertas (Pareto):** relaciona ocorrências e percentual acumulado para destacar os padrões prioritários.
+5. **Alertas por componente:** mostra os componentes com maior quantidade de registros classificados como alerta.
 
-As cores representam a prioridade atribuída ao padrão.
-
-Também são apresentadas linhas de referência para:
-
-```text
-Q50
-Q75
-```
-
----
-
-### 2. Peso de cada prioridade
-
-Gráfico em formato de rosca que mostra a quantidade de registros pertencentes aos padrões classificados como:
-
-```text
-RISCO ALTO
-RISCO MÉDIO
-RISCO BAIXO
-```
-
-Também é exibida a quantidade de padrões em cada categoria.
-
----
-
-### 3. Análise de Pareto
-
-O gráfico combina:
-
-```text
-Quantidade de ocorrências
-+
-Percentual acumulado
-```
-
-permitindo observar quantos padrões concentram a maior parte dos registros de alerta.
-
-Essa visualização auxilia na identificação dos padrões que podem merecer maior atenção durante uma investigação.
-
----
-
-### 4. Distribuição das ocorrências
-
-Apresenta a quantidade de padrões existente em diferentes faixas de recorrência.
-
-A visualização ajuda a compreender a distribuição utilizada na análise dos quartis Q50 e Q75.
-
----
-
-### 5. Alertas por data
-
-Gráfico temporal mostrando a quantidade de registros de alerta em cada data disponível no dataset.
-
-Essa análise permite identificar possíveis concentrações de alertas ao longo do tempo.
-
----
-
-### 6. Alertas por componente
-
-Apresenta os componentes responsáveis pela maior quantidade de registros classificados como alerta.
-
-Isso permite identificar quais componentes aparecem com maior frequência na amostra analisada.
-
----
-
-## 🔍 Ranking dos alertas
-
-Além das visualizações, o dashboard possui uma tabela contendo:
-
-| Campo | Descrição |
-|---|---|
-| `EventId` | Identificador do padrão |
-| `Level` | Severidade do registro |
-| `EventTemplate` | Padrão da mensagem |
-| `Occurrences` | Quantidade de ocorrências |
-| `Priority` | Classificação de prioridade |
-
-A interface permite:
-
-- Ordenar as colunas;
-- Pesquisar por `EventId`;
-- Pesquisar por `EventTemplate`;
-- Filtrar por prioridade;
-- Visualizar proporcionalmente a recorrência de cada padrão.
+O ranking completo também permite filtrar por prioridade, buscar por `EventId` ou mensagem e ordenar os resultados pela tabela.
 
 ---
 
@@ -372,100 +209,46 @@ A interface permite:
 bigdata-log-analyzer-web/
 │
 ├── data/
-│   └── sample/
-│       └── BGL_2k.log_structured.csv
+│   └── sample/             # datasets utilizados pela aplicação
 │
 ├── public/
-│   ├── app.js
-│   ├── index.html
-│   └── style.css
+│   ├── assets/
+│   │   └── logo.png        # logo exibida no README
+│   ├── app.js              # consumo da API e interação do dashboard
+│   ├── index.html          # estrutura da interface
+│   └── style.css           # estilos e responsividade
 │
 ├── src/
 │   ├── __init__.py
-│   ├── main.py
-│   └── server.py
+│   ├── main.py             # processamento e análise com Pandas
+│   └── server.py           # API Flask
 │
 ├── .gitignore
 ├── README.md
 └── requirements.txt
 ```
 
----
+### Responsabilidade dos principais arquivos
 
-## 🐍 `src/main.py`
-
-Responsável pela análise dos dados utilizando Pandas.
-
-Suas principais responsabilidades são:
-
-- Carregar o dataset;
-- Filtrar registros de alerta;
-- Agrupar padrões;
-- Contar ocorrências;
-- Calcular Q50 e Q75;
-- Classificar prioridades;
-- Gerar o ranking final.
+| Arquivo | Responsabilidade |
+|---|---|
+| `src/main.py` | Carrega os dados, filtra alertas, agrupa padrões, calcula ocorrências e classifica prioridades. |
+| `src/server.py` | Disponibiliza a análise por meio da API Flask. |
+| `public/app.js` | Consome a API, gera gráficos, preenche indicadores e controla busca, filtros e ordenação. |
+| `public/index.html` | Define a estrutura do dashboard. |
+| `public/style.css` | Define a apresentação visual e a responsividade da interface. |
 
 ---
 
-## 🌐 `src/server.py`
+## 🔄 Comunicação entre front-end e back-end
 
-Responsável pela comunicação entre o processamento Python e a interface web.
-
-Utiliza **Flask** para disponibilizar os resultados através do endpoint:
-
-```text
-GET /api/analysis
-```
-
-O resultado da análise é convertido para JSON e enviado ao navegador.
-
----
-
-## 🖥️ `public/index.html`
-
-Define a estrutura do dashboard.
-
----
-
-## 🎨 `public/style.css`
-
-Responsável pela aparência, responsividade e organização visual da aplicação.
-
----
-
-## ⚙️ `public/app.js`
-
-Responsável pela interação da interface.
-
-Entre suas funções estão:
-
-- Consumir a API Flask;
-- Receber os resultados em JSON;
-- Criar os gráficos;
-- Preencher os indicadores;
-- Criar a tabela;
-- Aplicar filtros;
-- Realizar buscas;
-- Ordenar os resultados.
-
----
-
-## 🔄 Comunicação entre Front-end e Back-end
-
-Quando o usuário solicita uma análise, o JavaScript executa:
+Ao solicitar a análise, o JavaScript chama o endpoint:
 
 ```javascript
 fetch("/api/analysis")
 ```
 
-A requisição chega ao Flask:
-
-```text
-GET /api/analysis
-```
-
-O fluxo então é:
+O fluxo de dados é:
 
 ```text
 app.js
@@ -485,38 +268,19 @@ JSON
 Dashboard
 ```
 
-Isso significa que os valores apresentados no dashboard não ficam definidos manualmente no HTML.
-
-Eles são obtidos a partir da análise realizada pelo back-end.
+Os dados exibidos não são definidos manualmente no HTML: eles são gerados pela análise realizada no back-end e retornados pela API em JSON.
 
 ---
 
 ## 🛠️ Tecnologias utilizadas
 
-### Back-end
-
-- Python
-- Flask
-
-### Análise de dados
-
-- Pandas
-
-### Front-end
-
-- HTML5
-- CSS3
-- JavaScript
-
-### Visualização de dados
-
-- Chart.js
-
-### Ferramentas
-
-- Git
-- GitHub
-- Vercel
+| Área | Tecnologias |
+|---|---|
+| Back-end | Python, Flask |
+| Análise de dados | Pandas |
+| Front-end | HTML5, CSS3, JavaScript |
+| Visualização | Chart.js |
+| Ferramentas e deploy | Git, GitHub, Vercel |
 
 ---
 
@@ -526,25 +290,14 @@ Eles são obtidos a partir da análise realizada pelo back-end.
 
 ```bash
 git clone https://github.com/virla-carlos/bigdata-log-analyzer-web.git
-```
-
-Entre na pasta:
-
-```bash
 cd bigdata-log-analyzer-web
 ```
 
----
-
-### 2. Crie o ambiente virtual
+### 2. Crie e ative o ambiente virtual
 
 ```bash
 python -m venv .venv
 ```
-
----
-
-### 3. Ative o ambiente
 
 No Windows:
 
@@ -552,35 +305,19 @@ No Windows:
 .venv\Scripts\activate
 ```
 
----
-
-### 4. Instale as dependências
+### 3. Instale as dependências
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Ou:
-
-```bash
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-```
-
----
-
-### 5. Execute a API
+### 4. Execute a API
 
 ```bash
 python src/server.py
 ```
 
-Ou:
-
-```bash
-.\.venv\Scripts\python.exe .\src\server.py
-```
-
-A API ficará disponível em:
+A aplicação ficará disponível em:
 
 ```text
 http://127.0.0.1:5000/api/analysis
@@ -590,7 +327,9 @@ http://127.0.0.1:5000/api/analysis
 
 ## ☁️ Deploy
 
-A versão web está preparada para deploy utilizando **Vercel**.
+A versão publicada está disponível na Vercel:
+
+**https://log-analyzer-app.vercel.app/**
 
 O fluxo de publicação é:
 
@@ -603,24 +342,10 @@ GitHub
      ↓
 Vercel
      ↓
-Build
-     ↓
-Aplicação publicada
+Build e deploy
 ```
 
-Após conectar o projeto da Vercel ao repositório GitHub, novos pushes podem gerar automaticamente novos deployments.
-
----
-
-## 🔄 Fluxo de desenvolvimento
-
-```bash
-git add .
-git commit -m "feat: adiciona nova funcionalidade"
-git push
-```
-
-Após o `push`, o GitHub recebe a nova versão e a plataforma de hospedagem pode iniciar um novo deployment.
+Após novos `pushes` para o repositório conectado, a Vercel pode iniciar um novo deployment automaticamente.
 
 ---
 
@@ -628,12 +353,11 @@ Após o `push`, o GitHub recebe a nova versão e a plataforma de hospedagem pode
 
 A versão atual:
 
-- Utiliza inicialmente a amostra BGL com 2.000 registros;
-- Ainda não executa o processamento do dataset completo na aplicação web;
-- Utiliza `EventId` e `EventTemplate` previamente estruturados;
-- Não gera templates diretamente dos logs brutos;
+- Utiliza uma amostra experimental de 2.000 registros;
+- Trabalha com `EventId` e `EventTemplate` previamente estruturados;
+- Não gera padrões diretamente a partir de arquivos de log brutos;
 - Não realiza monitoramento em tempo real;
-- Não realiza diagnóstico automático de causa raiz;
+- Não diagnostica automaticamente a causa raiz;
 - Não executa correções no sistema analisado;
 - Baseia a prioridade principalmente na recorrência;
 - Ainda não possui integração com banco de dados.
@@ -642,62 +366,20 @@ A versão atual:
 
 ## 🗺️ Próximas evoluções
 
-Possíveis melhorias futuras:
-
-- Processamento do dataset BGL completo;
-- Leitura direta dos arquivos de log brutos;
-- Geração automática de `EventTemplate`;
-- Upload de arquivos pela interface;
-- Integração com banco de dados SQL;
-- Análises temporais mais avançadas;
-- Combinação entre recorrência e severidade;
-- Processamento de diferentes datasets;
-- Aplicação de técnicas de Machine Learning;
-- Utilização de Inteligência Artificial para auxiliar na interpretação dos padrões.
-
----
-
-## 🎯 Visão futura
-
-Uma evolução possível é transformar o projeto em uma ferramenta onde equipes de suporte possam enviar arquivos de log e receber:
-
-```text
-Resumo da análise
-+
-Padrões mais recorrentes
-+
-Alertas prioritários
-+
-Visualizações
-+
-Evidências para investigação
-```
-
-facilitando a análise inicial de incidentes sem substituir a decisão humana.
+- Processar o dataset BGL completo e outros conjuntos de dados;
+- Ler arquivos de log brutos pela aplicação;
+- Gerar `EventTemplate` automaticamente;
+- Permitir upload de arquivos pela interface;
+- Integrar a aplicação a um banco de dados SQL;
+- Combinar recorrência e severidade na prioridade;
+- Criar análises temporais mais avançadas;
+- Explorar técnicas de Machine Learning e Inteligência Artificial para auxiliar na interpretação dos padrões.
 
 ---
 
 ## 🎓 Contexto acadêmico
 
-Projeto desenvolvido para a disciplina de:
-
-**Tópicos de Big Data em Python**
-
-O desenvolvimento também busca aplicar práticas próximas a um projeto real de software:
-
-- Discovery;
-- Definição do problema;
-- Planejamento;
-- Definição de MVP;
-- Versionamento com Git;
-- Separação de responsabilidades;
-- Desenvolvimento incremental;
-- Análise de dados;
-- Visualização;
-- Documentação;
-- Deploy da aplicação.
-
----
+Projeto desenvolvido para a disciplina de **Tópicos de Big Data em Python**, aplicando práticas de desenvolvimento como discovery, definição de problema, planejamento, MVP, versionamento com Git, separação de responsabilidades, desenvolvimento incremental, análise de dados, visualização, documentação e deploy.
 
 <div align="center">
 
