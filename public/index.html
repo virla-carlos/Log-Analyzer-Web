@@ -13,7 +13,7 @@
   <header class="topbar">
     <div>
       <h1>Big Data Log Analyzer</h1>
-      <p class="subtitle">Alertas recorrentes do BGL, ordenados por prioridade de análise</p>
+      <p class="subtitle">Alertas recorrentes de Log, ordenados por prioridade de análise</p>
     </div>
     <button id="analyze" class="btn">Analisar logs</button>
   </header>
@@ -43,11 +43,20 @@
 
       <figure class="chart-side">
         <figcaption>
-          <h2>Peso de cada prioridade</h2>
-          <p>Parcela dos registros de alerta em cada faixa.</p>
+          <h2>Poucos padrões, muitos alertas</h2>
+          <p>Quanto cada prioridade pesa em padrões e em registros.</p>
         </figcaption>
-        <div class="canvas-box"><canvas id="donut"></canvas></div>
-        <ul class="legend" id="legend"></ul>
+        <div class="canvas-box tall"><canvas id="priority"></canvas></div>
+      </figure>
+    </section>
+
+    <section class="chart-wide">
+      <figure>
+        <figcaption>
+          <h2>Alertas por dia</h2>
+          <p>Registros de alerta em cada data do dataset.</p>
+        </figcaption>
+        <div class="canvas-box wide"><canvas id="timeline"></canvas></div>
       </figure>
     </section>
 
@@ -62,24 +71,8 @@
 
       <figure>
         <figcaption>
-          <h2>Distribuição das ocorrências</h2>
-          <p>Quantos padrões têm poucas ou muitas ocorrências. Mostra a distribuição das ocorrências utilizada na análise dos quartis Q50 e Q75.</p>
-        </figcaption>
-        <div class="canvas-box"><canvas id="hist"></canvas></div>
-      </figure>
-
-      <figure>
-        <figcaption>
-          <h2>Alertas por dia</h2>
-          <p>Registros de alerta em cada data do dataset.</p>
-        </figcaption>
-        <div class="canvas-box"><canvas id="timeline"></canvas></div>
-      </figure>
-
-      <figure>
-        <figcaption>
           <h2>Alertas por componente</h2>
-          <p>Os 10 componentes que mais emitiram alertas.</p>
+          <p>Distribuição dos alertas por componente.</p>
         </figcaption>
         <div class="canvas-box"><canvas id="component"></canvas></div>
       </figure>

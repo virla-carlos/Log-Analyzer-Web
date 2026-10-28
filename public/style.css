@@ -83,15 +83,6 @@ figcaption p { margin: 2px 0 12px; color: var(--muted); font-size: 0.88rem; }
 .legend .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
 .legend .qty { margin-left: auto; font-variant-numeric: tabular-nums; color: var(--muted); }
 
-.charts-extra {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 40px;
-  margin: 0 0 40px;
-  padding-top: 32px;
-  border-top: 1px solid var(--line);
-}
-
 .ranking-head { display: flex; justify-content: space-between; align-items: end; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
 .controls { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
 
@@ -141,7 +132,7 @@ tbody tr:hover { background: #f7f8fa; }
 .count { color: var(--muted); font-size: 0.85rem; margin: 8px 0 0; }
 
 @media (max-width: 900px) {
-  .charts, .charts-extra { grid-template-columns: 1fr; }
+  .charts { grid-template-columns: 1fr; }
   .topbar { flex-direction: column; align-items: flex-start; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

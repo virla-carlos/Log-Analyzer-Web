@@ -7,7 +7,6 @@ const byKey = Object.fromEntries(PRIORITIES.map(p => [p.key, p]));
 
 const state = { data: null, filter: "TODOS", search: "", sortKey: "Occurrences", sortDir: -1 };
 let barChart = null;
-let donutChart = null;
 
 Chart.defaults.font.family = "'IBM Plex Sans', system-ui, sans-serif";
 Chart.defaults.color = "#5b6478";
@@ -36,14 +35,14 @@ async function analyze() {
   $("error").hidden = true;
 
   try {
-    const response = await fetch("http://127.0.0.1:5000/api/analysis");
+    const response = await fetch("/api/analysis");
     if (!response.ok) throw new Error("O servidor respondeu com erro " + response.status);
     state.data = await response.json();
     render();
   } catch (err) {
     $("error").textContent =
       "Não foi possível carregar a análise. Confira se o servidor está rodando e se " +
-      "data/sample/BGL_2k.log_structured.csv existe. Detalhe: " + err.message;
+      "data/raw/BGL_2k.log_structured.csv existe. Detalhe: " + err.message;
     $("error").hidden = false;
   } finally {
     button.disabled = false;
@@ -56,9 +55,8 @@ function render() {
   $("dashboard").hidden = false;
   renderStats();
   renderBar();
-  renderDonut();
+  renderPriority();
   renderPareto();
-  renderHistogram();
   renderTimeline();
   renderComponent();
   renderChips();
@@ -97,6 +95,30 @@ const thresholdLines = {
   },
 };
 
+// Escreve o número de ocorrências em cada barra: dentro dela quando cabe, ao lado quando é curta
+const valueLabels = {
+  id: "valueLabels",
+  afterDatasetsDraw(chart) {
+    const { ctx } = chart;
+    const bars = chart.getDatasetMeta(0).data;
+    const values = chart.data.datasets[0].data;
+    const colors = chart.data.datasets[0].backgroundColor;
+
+    ctx.save();
+    ctx.font = "600 12px 'IBM Plex Sans', sans-serif";
+    ctx.textBaseline = "middle";
+    bars.forEach((bar, i) => {
+      const text = String(values[i]);
+      const fits = bar.x - bar.base > ctx.measureText(text).width + 14;
+      ctx.textAlign = fits ? "right" : "left";
+      // o texto do risco médio (amarelo) precisa de cor escura para ser legível
+      ctx.fillStyle = fits ? (colors[i] === byKey["RISCO MÉDIO"].color ? "#412402" : "#ffffff") : "#14213d";
+      ctx.fillText(text, fits ? bar.x - 7 : bar.x + 6, bar.y);
+    });
+    ctx.restore();
+  },
+};
+
 function renderBar() {
   const { rows, q50, q75 } = state.data;
   const top = rows.slice(0, 12);
@@ -115,6 +137,7 @@ function renderBar() {
     options: {
       indexAxis: "y",
       maintainAspectRatio: false,
+      layout: { padding: { right: 28 } },
       scales: {
         x: { beginAtZero: true, grid: { color: "#e3e7ee" }, title: { display: true, text: "Ocorrências" } },
         y: { grid: { display: false } },
@@ -136,43 +159,74 @@ function renderBar() {
         },
       },
     },
-    plugins: [thresholdLines],
+    plugins: [thresholdLines, valueLabels],
   });
 }
 
-/* Gráfico 2: rosca com o total de registros em cada prioridade */
-function renderDonut() {
-  const { rows, total_alerts } = state.data;
-  const totals = PRIORITIES.map(p =>
-    rows.filter(r => r.Priority === p.key).reduce((sum, r) => sum + r.Occurrences, 0)
-  );
-  const patterns = PRIORITIES.map(p => rows.filter(r => r.Priority === p.key).length);
-  if (donutChart) donutChart.destroy();
+/* Gráfico 2: barras agrupadas, % dos padrões x % dos registros em cada prioridade */
+const percentLabels = {
+  id: "percentLabels",
+  afterDatasetsDraw(chart) {
+    const { ctx } = chart;
+    ctx.save();
+    ctx.font = "600 12px 'IBM Plex Sans', sans-serif";
+    ctx.fillStyle = "#14213d";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "bottom";
+    chart.data.datasets.forEach((dataset, d) => {
+      chart.getDatasetMeta(d).data.forEach((bar, i) => {
+        ctx.fillText(Math.round(dataset.data[i]) + "%", bar.x, bar.y - 4);
+      });
+    });
+    ctx.restore();
+  },
+};
 
-  donutChart = new Chart($("donut"), {
-    type: "doughnut",
+function renderPriority() {
+  const { rows, total_alerts } = state.data;
+  const names = ["Alto", "Médio", "Baixo"];
+
+  const groups = PRIORITIES.map(p => rows.filter(r => r.Priority === p.key));
+  const records = groups.map(g => g.reduce((sum, r) => sum + r.Occurrences, 0));
+  const patternShare = groups.map(g => (g.length / rows.length) * 100);
+  const recordShare = records.map(n => (n / total_alerts) * 100);
+
+  draw("priority", {
+    type: "bar",
     data: {
-      labels: PRIORITIES.map(p => p.key),
-      datasets: [{ data: totals, backgroundColor: PRIORITIES.map(p => p.color), borderColor: "#eef1f4", borderWidth: 3 }],
+      // um rótulo em array vira várias linhas no eixo
+      labels: PRIORITIES.map((p, i) => [names[i], groups[i].length + " padrões", fmt(records[i]) + " registros"]),
+      datasets: [
+        { label: "% dos padrões", data: patternShare, borderWidth: 1, borderRadius: 3,
+          backgroundColor: PRIORITIES.map(p => p.color + "55"), borderColor: PRIORITIES.map(p => p.color) },
+        { label: "% dos registros", data: recordShare, borderRadius: 3,
+          backgroundColor: PRIORITIES.map(p => p.color) },
+      ],
     },
     options: {
       maintainAspectRatio: false,
-      cutout: "62%",
+      layout: { padding: { top: 18 } },
+      scales: {
+        x: { grid: { display: false } },
+        y: { beginAtZero: true, max: 100, grid: { color: "#e3e7ee" }, ticks: { callback: v => v + "%" } },
+      },
       plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: item => fmt(item.raw) + " registros (" + fmt((item.raw / total_alerts) * 100) + "%)",
+        legend: {
+          position: "bottom",
+          onClick: () => {},
+          labels: {
+            boxWidth: 12,
+            generateLabels: () => [
+              { text: "% dos padrões", fillStyle: "rgba(91,100,120,0.3)", strokeStyle: "#5b6478", lineWidth: 1 },
+              { text: "% dos registros", fillStyle: "#5b6478", strokeStyle: "#5b6478", lineWidth: 1 },
+            ],
           },
         },
+        tooltip: { callbacks: { label: i => i.dataset.label + ": " + fmt(i.raw) + "%" } },
       },
     },
+    plugins: [percentLabels],
   });
-
-  $("legend").innerHTML = PRIORITIES.map((p, i) =>
-    `<li><span class="dot" style="background:${p.color}"></span>${esc(p.key)}` +
-    `<span class="qty">${patterns[i]} padrões · ${fmt(totals[i])} registros</span></li>`
-  ).join("");
 }
 
 /* Gráfico 3: Pareto (barras + linha do percentual acumulado) */
@@ -211,35 +265,7 @@ function renderPareto() {
   });
 }
 
-/* Gráfico 4: histograma da quantidade de ocorrências por padrão */
-function renderHistogram() {
-  const bins = [
-    { label: "1", min: 1, max: 1 }, { label: "2", min: 2, max: 2 },
-    { label: "3", min: 3, max: 3 }, { label: "4–5", min: 4, max: 5 },
-    { label: "6–10", min: 6, max: 10 }, { label: "11–20", min: 11, max: 20 },
-    { label: "21+", min: 21, max: Infinity },
-  ];
-  const counts = bins.map(b =>
-    state.data.rows.filter(r => r.Occurrences >= b.min && r.Occurrences <= b.max).length
-  );
-
-  draw("hist", {
-    type: "bar",
-    data: { labels: bins.map(b => b.label), datasets: [{ data: counts, backgroundColor: "#14213d", borderRadius: 3 }] },
-    options: {
-      maintainAspectRatio: false,
-      scales: {
-        x: { grid: { display: false }, title: { display: true, text: "Ocorrências do padrão" } },
-        y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: "#e3e7ee" },
-             title: { display: true, text: "Quantidade de padrões" } },
-      },
-      plugins: { legend: { display: false },
-        tooltip: { callbacks: { label: i => i.raw + (i.raw === 1 ? " padrão" : " padrões") } } },
-    },
-  });
-}
-
-/* Gráfico 5: linha com os alertas por data */
+/* Gráfico 4: linha com os alertas por data */
 function renderTimeline() {
   const data = state.data.insights.by_date;
   draw("timeline", {
@@ -252,7 +278,7 @@ function renderTimeline() {
     options: {
       maintainAspectRatio: false,
       scales: {
-        x: { grid: { display: false }, ticks: { maxTicksLimit: 8 } },
+        x: { grid: { display: false }, ticks: { maxTicksLimit: 12 } },
         y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: "#e3e7ee" } },
       },
       plugins: { legend: { display: false },
@@ -261,7 +287,7 @@ function renderTimeline() {
   });
 }
 
-/* Gráfico 6: alertas por componente */
+/* Gráfico 5: alertas por componente */
 function renderComponent() {
   const data = state.data.insights.by_component.slice(0, 10);
   draw("component", {
@@ -296,14 +322,8 @@ function renderTable() {
     .filter(r => state.filter === "TODOS" || r.Priority === state.filter)
     .filter(r => !term || (r.EventId + " " + r.EventTemplate).toLowerCase().includes(term))
     .sort((a, b) => {
-      const x = a[state.sortKey];
-      const y = b[state.sortKey];
-
-      return (
-        x > y ? 1 : 
-        x < y ? -1 : 
-        0
-      ) * state.sortDir;
+      const x = a[state.sortKey], y = b[state.sortKey];
+      return (x > y ? 1 : x < y ? -1 : 0) * state.sortDir;
     });
 
   $("rows").innerHTML = visible.map(r => {
