@@ -6,11 +6,6 @@ from src.main import bgl, generate_analysis, calc_limit
 # static_url_path="" faz a pasta "static" ser servida a partir da raiz do site
 app = Flask(__name__)
 
-@app.after_request
-def add_cors_headers(response):
-    response.headers["Access-Control-Allow-Origin"] = "http://127.0.0.1:5500"
-    return response
-
 def alert_insights():
     """Agrupamentos extras sobre os registros de alerta (colunas Date e Component)."""
     alerts = bgl[bgl["Label"] != "-"]
